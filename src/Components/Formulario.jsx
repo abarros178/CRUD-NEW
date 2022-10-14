@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { nanoid } from "nanoid";
 import { firebase } from "../firebase";
+import { FormControl, Grid, InputLabel, MenuItem, Select } from "@mui/material";
 
 const Formulario = () => {
   const [id, setId] = React.useState(0);
@@ -18,10 +19,11 @@ const Formulario = () => {
   const [paises, setPaises] = React.useState([]);
   const [codPaises, setCodPaises] = React.useState([]);
   const [paisesFinal, setpaisesFinal] = React.useState([]);
-
+  const [aux, setaux] = useState(true)
   React.useEffect(() => {
     const obtenerDatos = async () => {
       try {
+        if(aux){
         const db = firebase.firestore();
         const data = await db.collection("Listaequipos").get();
         const arrayData = data.docs.map((item) => ({
@@ -31,6 +33,8 @@ const Formulario = () => {
         console.log(arrayData);
 
         setListaequipos(arrayData);
+        setaux(false)
+      }
       } catch (error) {
         console.log(error);
       }
@@ -45,9 +49,14 @@ const Formulario = () => {
           setpaisesFinal(data);
         });
     obtenertPaises();
-    obtenerDatos();
-  }, [partidosjugados, listaequipos]);
-  console.log(paisesFinal, "final final");
+    if(aux) obtenerDatos()
+  }, [aux]);
+
+const onchangepais = (e) =>{
+    setNombreequipo(e.target.value)
+    e.preventDefault()
+  }
+  // console.log(paisesFinal, "final final");
 
   React.useEffect(() => {
     const partidosganadosnum = parseInt(
@@ -66,12 +75,13 @@ const Formulario = () => {
   }, [partidosganados, partidosempatados, partidosperdidos]);
 
   const guardarequipos = async (e) => {
+    console.log(nombreequipo)
     e.preventDefault();
     let nombreEquipoFinal = paises[nombreequipo];
-    console.log(nombreEquipoFinal, "nombre de equipo final");
+    // console.log(nombreEquipoFinal, "nombre de equipo final");
     let codigoPais = codPaises[nombreequipo];
-    console.log(codigoPais, "codigoPais final");
-    if (!nombreequipo.trim()) {
+    // console.log(codigoPais, "codigoPais final");
+    if (!nombreequipo) {
       alert("Digite el nombre del equipo");
       return;
     }
@@ -156,6 +166,7 @@ const Formulario = () => {
       setDiferenciaGoles(0);
 
       setId(0);
+      setaux(true)
     } catch (error) {
       console.log(error);
     }
@@ -181,7 +192,8 @@ const Formulario = () => {
     setDiferenciaGoles(item.golesdeDiferencia);
     setModoEdicion(true);
     setId(item.id);
-    console.log(item);
+    // console.log(item);
+
   };
   const editarEquipos = async (e) => {
     e.preventDefault();
@@ -274,6 +286,7 @@ const Formulario = () => {
       setDiferenciaGoles("");
       setModoEdicion(false);
       setId("");
+      setaux(true)
     } catch (error) {
       console.log(error);
     }
@@ -285,6 +298,7 @@ const Formulario = () => {
       const aux = listaequipos.filter((item) => item.id !== id);
       setListaequipos(aux);
       //console.log(aux);
+      setaux(true)
     } catch (error) {
       console.log(error);
     }
@@ -375,20 +389,30 @@ const Formulario = () => {
             </table>
           </div>
 
-          <div className="col">
+          <div className="col-12">
             <form onSubmit={modoEdicion ? editarEquipos : guardarequipos}>
-              <h6 className="card-subtitle mb-2 text-muted">Equipo</h6>
-              <div>
-                {/* <input
-                className="form-control mb-2 "
-                type="text"
-                placeholder="Ingrese equipo"
-                onChange={(e) => setNombreequipo(e.target.value)}
-                value={nombreequipo}
-              />
-              <div className="mb-3">
-                <label className="form-label">Paises:</label> */}
-                <select
+              {/* <h6 className="card-subtitle mb-2 text-muted">Equipo</h6> */}
+              <Grid item xs={12} md={12}>
+              <FormControl fullWidth>
+              <InputLabel id="demo-simple-select-label" >Equipo</InputLabel>
+              <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              fullWidth
+              // id='Equipo'
+              value={nombreequipo}
+              onChange={onchangepais}
+              name='Equipo'
+            >
+            { 
+              paises.map((pais, index) => (
+                <MenuItem key={index} value={index}>
+                  {pais}
+                </MenuItem>
+              ))}
+               </Select>
+          </FormControl>
+                {/* <select
                   required
                   onChange={(e) => setNombreequipo(e.target.value)}
                   value={nombreequipo}
@@ -400,8 +424,8 @@ const Formulario = () => {
                       {pais}
                     </option>
                   ))}
-                </select>
-              </div>
+                </select> */}
+            </Grid>
               {/* </div> */}
               <hr></hr>
               <div className="col">
