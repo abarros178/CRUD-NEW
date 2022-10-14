@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { nanoid } from "nanoid";
+// import { nanoid } from "nanoid";
 import { firebase } from "../firebase";
 import { FormControl, Grid, InputLabel, MenuItem, Select } from "@mui/material";
 
@@ -18,7 +18,7 @@ const Formulario = () => {
   const [modoEdicion, setModoEdicion] = React.useState(false);
   const [paises, setPaises] = React.useState([]);
   const [codPaises, setCodPaises] = React.useState([]);
-  const [paisesFinal, setpaisesFinal] = React.useState([]);
+  // const [paisesFinal, setpaisesFinal] = React.useState([]);
   const [aux, setaux] = useState(true)
   React.useEffect(() => {
     const obtenertPaises = async () =>
@@ -27,7 +27,6 @@ const Formulario = () => {
       .then((data) => {
         setPaises(Object.values(data));
         setCodPaises(Object.keys(data));
-        setpaisesFinal(data);
       });
     const obtenerDatos = async () => {
      
