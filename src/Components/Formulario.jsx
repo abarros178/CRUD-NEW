@@ -21,7 +21,16 @@ const Formulario = () => {
   const [paisesFinal, setpaisesFinal] = React.useState([]);
   const [aux, setaux] = useState(true)
   React.useEffect(() => {
+    const obtenertPaises = async () =>
+    await fetch("https://flagcdn.com/es/codes.json")
+      .then((response) => response.json())
+      .then((data) => {
+        setPaises(Object.values(data));
+        setCodPaises(Object.keys(data));
+        setpaisesFinal(data);
+      });
     const obtenerDatos = async () => {
+     
       try {
         if(aux){
         const db = firebase.firestore();
@@ -33,23 +42,19 @@ const Formulario = () => {
         console.log(arrayData);
 
         setListaequipos(arrayData);
-        setaux(false)
       }
       } catch (error) {
         console.log(error);
       }
     };
 
-    const obtenertPaises = async () =>
-      await fetch("https://flagcdn.com/es/codes.json")
-        .then((response) => response.json())
-        .then((data) => {
-          setPaises(Object.values(data));
-          setCodPaises(Object.keys(data));
-          setpaisesFinal(data);
-        });
-    obtenertPaises();
-    if(aux) obtenerDatos()
+ 
+    if(aux) {
+      obtenerDatos()
+      obtenertPaises();
+      setaux(false)
+
+    }
   }, [aux]);
 
 const onchangepais = (e) =>{
@@ -181,7 +186,24 @@ const onchangepais = (e) =>{
     }
   };
   const editar = (item) => {
-    setNombreequipo(item.nombreEquipo);
+    // console.log(typeof(codPaises[0]))
+    // console.log(typeof(item.codigoPais))
+    // if(codPaises[0]===item.codigoPais)
+
+    codPaises.forEach((codigo,indice) => {
+      if(item.codigoPais===codigo){
+        console.log('entre')
+        setNombreequipo(indice)
+      }
+    })
+    
+    // ;((codigo,index)=>{
+    //   if(item.codigocodigo===codigo){
+    //     console.log('entre')
+    //     setNombreequipo(index)
+    //   }
+    // })
+    // setNombreequipo(item.nombreEquipo);
     setPuntos(item.Puntos);
     setPartidosJugados(item.partidosJugados);
     setPartidosGanados(item.partidosGanados);
@@ -198,7 +220,7 @@ const onchangepais = (e) =>{
   const editarEquipos = async (e) => {
     e.preventDefault();
 
-    if (!nombreequipo.trim()) {
+    if (!nombreequipo) {
       alert("Digite el nombre del equipo");
       return;
     }
