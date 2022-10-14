@@ -1,6 +1,6 @@
 import React from "react";
-//import { nanoid } from "nanoid";
-// import { firebase } from "../firebase";
+import { nanoid } from "nanoid";
+import { firebase } from "../firebase";
 
 const Formulario = () => {
   const [id, setId] = React.useState(0);
